@@ -1,8 +1,17 @@
 import React, {Component} from 'react';
-import {Text, View, AsyncStorage, Picker, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, Image, View, AsyncStorage, Picker, TouchableOpacity} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 
 class FiltroCategoria extends Component {
+
+    static navigationOptions = {
+        tabBarIcon: () => (
+          <Image 
+            source = {require('../assets/img/Filtrar.png')}
+            style={{width: 25, height: 25, tintColor: 'white'}}
+          />
+        )
+      }
 
     constructor () {
         super ();
