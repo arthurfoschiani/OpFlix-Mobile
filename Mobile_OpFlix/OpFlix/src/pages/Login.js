@@ -10,8 +10,9 @@ class Login extends Component {
     constructor() {
         super();
         this.state = {
-            email: 'arthur@email.com',
-            senha: '123456'
+            email: null,
+            senha: null,
+            erro: ""
         }
     }
     
@@ -29,8 +30,18 @@ class Login extends Component {
             })
         })
         .then(resposta => resposta.json())
-        .then(data => this._irParaHome(data.token))
-        .catch(erro => console.warn('ocorreu um erro: ' + erro))
+        .then(data => {
+                if(data.token != null){
+                    this._irParaHome(data.token) 
+                } else {
+                    this.setState({erro: "Usuário ou senha inválidos"}),
+                    console.warn(erro)
+                }
+            })
+        .catch(erro => {
+            this.setState({erro: "Usuário ou senha inválidos"}),
+            console.warn(erro)
+        })
     }
     
     _irParaHome = async (tokenRecebido) => {
@@ -49,7 +60,8 @@ class Login extends Component {
             <View style={styles.Page}>
                 <Image source = {require('../assets/img/Logo.png')} style={styles.Imagem}/>
                 <TextInput placeholder="email" placeholderTextColor="#B1B1B1" onChangeText={email => this.setState({email})} style={styles.Input}/>
-                <TextInput placeholder="senha" placeholderTextColor="#B1B1B1" onChangeText={senha => this.setState({senha})} style={styles.Input}/>
+                <TextInput placeholder="senha" secureTextEntry={true} placeholderTextColor="#B1B1B1" onChangeText={senha => this.setState({senha})} style={styles.Input}/>
+                <Text style={{color: "red", textAlign: "center"}}>{this.state.erro}</Text>
                 <TouchableOpacity onPress={this._realizarLogin} style={styles.botao}>
                     <Text style={styles.texto} >Login</Text>
                 </TouchableOpacity>

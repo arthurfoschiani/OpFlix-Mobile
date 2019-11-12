@@ -37,13 +37,18 @@ class FiltroData extends Component {
         .catch(erro => console.warn(erro));
     };
 
+    _Logout = async (event) => {
+        await AsyncStorage.removeItem("@opflix:token");
+        this.props.navigation.navigate('AuthStack')
+    }
+
     render () {
         return (
             <ScrollView style={styles.ScrollView}>
                 <View style={styles.Page}>
                     <View style={styles.menu}>
                         <Image source={require('../assets/img/Logo.png')} style={styles.Imagem} />
-                        <Text style={styles.Sair}>Sair</Text>
+                        <TouchableOpacity><Text style={styles.Sair} onPress={this._Logout}>Sair</Text></TouchableOpacity>
                     </View>
                     <Text style={styles.h1}>Busque os lançamentos de cada mês</Text>
                     <Picker style={styles.Picker} selectedValue={this.state.MesEscolhido} onValueChange={(itemValue) => this.setState({MesEscolhido: itemValue})}>

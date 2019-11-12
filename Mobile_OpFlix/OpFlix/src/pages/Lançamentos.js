@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, Image, View, AsyncStorage } from 'react-native';
+import { Text, StyleSheet, Image, View, TouchableOpacity, AsyncStorage } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 class Lancamentos extends Component {
@@ -40,13 +40,18 @@ class Lancamentos extends Component {
             .catch(erro => console.warn(erro));
     };
 
+    _Logout = async (event) => {
+        await AsyncStorage.removeItem("@opflix:token");
+        this.props.navigation.navigate('AuthStack')
+    }
+
     render() {
         return (
             <ScrollView style={styles.ScrollView}>
                 <View style={styles.Page}>
                     <View style={styles.menu}>
                         <Image source={require('../assets/img/Logo.png')} style={styles.Imagem} />
-                        <Text style={styles.Sair}>Sair</Text>
+                        <TouchableOpacity><Text style={styles.Sair} onPress={this._Logout}>Sair</Text></TouchableOpacity>
                     </View>
                     <Text style={styles.h1}>Lançamentos</Text>
                     <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} renderItem={({ item }) => (
@@ -103,6 +108,7 @@ const styles = StyleSheet.create({
     FlatList: {
         backgroundColor: "#2C2C2C",
         marginBottom: 10,
+        width: "100%"
     },
     div: {
         width: "95%",
