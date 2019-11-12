@@ -42,7 +42,7 @@ class Lancamentos extends Component {
 
     render() {
         return (
-            <ScrollView>
+            <ScrollView style={styles.ScrollView}>
                 <View style={styles.Page}>
                     <View style={styles.menu}>
                         <Image source={require('../assets/img/Logo.png')} style={styles.Imagem} />
@@ -69,6 +69,10 @@ class Lancamentos extends Component {
 }
 
 const styles = StyleSheet.create({
+    ScrollView: {
+        height: "100%",
+        backgroundColor: "#2C2C2C",
+    },
     Page: {
         backgroundColor: "#2C2C2C",
         alignItems: "center",
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         padding: 5,
         marginLeft: 10,
-        marginTop: 20
+        marginTop: 20,
     }
 });
 
