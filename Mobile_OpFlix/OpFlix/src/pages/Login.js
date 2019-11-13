@@ -15,6 +15,16 @@ class Login extends Component {
             erro: ""
         }
     }
+
+    componentDidMount() {
+        this._verificacao()
+    }
+    
+    _verificacao = async () => {
+        if(await AsyncStorage.getItem('@opflix:token') != null){
+            this.props.navigation.navigate('MainNavigator')
+        }
+    }
     
     _realizarLogin = async () => {
         // console.warn(this.state.email + ' - ' + this.state.senha);

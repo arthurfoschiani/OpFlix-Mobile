@@ -40,6 +40,12 @@ class Lancamentos extends Component {
             .catch(erro => console.warn(erro));
     };
 
+    getParsedDate(date){
+        date = String(date).split('T');
+        var days = String(date[0]).split('-');
+        return [parseInt(days[2]),"/", parseInt(days[1]),"/", parseInt(days[0])];
+    }
+
     _Logout = async (event) => {
         await AsyncStorage.removeItem("@opflix:token");
         this.props.navigation.navigate('AuthStack')
@@ -56,15 +62,15 @@ class Lancamentos extends Component {
                     <Text style={styles.h1}>Lançamentos</Text>
                     <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} renderItem={({ item }) => (
                         <View style={styles.div}>
-                            <Text>Título: {item.nomeMidia}</Text>
-                            <Text>Tipo da mídia: {item.idTipoMidiaNavigation.tipoMidia1}</Text>
-                            <Text>Sinopse: {item.sinopse}</Text>
-                            <Text>Tempo da duração: {item.tempoDuracao}</Text>
-                            <Text>Categoria: {item.idCategoriaNavigation.categoria1}</Text>
-                            <Text>Diretor: {item.idDiretorNavigation.diretor1}</Text>
-                            <Text>Data do lançamento: {item.dataLancamento}</Text>
-                            <Text>Plataforma: {item.idPlataformaNavigation.plataforma1}</Text>
-                            <Text>Decrição: {item.descricao}</Text>
+                            <Text style={styles.text}>Título: {item.nomeMidia}</Text>
+                            <Text style={styles.text}>Tipo da mídia: {item.idTipoMidiaNavigation.tipoMidia1}</Text>
+                            <Text style={styles.text}>Sinopse: {item.sinopse}</Text>
+                            <Text style={styles.text}>Tempo da duração: {item.tempoDuracao}</Text>
+                            <Text style={styles.text}>Categoria: {item.idCategoriaNavigation.categoria1}</Text>
+                            <Text style={styles.text}>Diretor: {item.idDiretorNavigation.diretor1}</Text>
+                            <Text style={styles.text}>Data do lançamento: {this.getParsedDate(item.dataLancamento)}</Text>
+                            <Text style={styles.text}>Plataforma: {item.idPlataformaNavigation.plataforma1}</Text>
+                            <Text style={styles.text}>Decrição: {item.descricao}</Text>
                         </View>
                     )} />
                 </View>
@@ -77,6 +83,9 @@ const styles = StyleSheet.create({
     ScrollView: {
         height: "100%",
         backgroundColor: "#2C2C2C",
+    },
+    text: {
+        color: "white"
     },
     Page: {
         backgroundColor: "#2C2C2C",

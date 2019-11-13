@@ -1,54 +1,67 @@
-import React, {Component} from 'react';
-import {Text, StyleSheet, Image, View, AsyncStorage, Picker, TouchableOpacity} from 'react-native';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import React, { Component } from 'react';
+import { Text, StyleSheet, Image, View, AsyncStorage, Picker, TouchableOpacity } from 'react-native';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 class FiltroCategoria extends Component {
 
     static navigationOptions = {
         tabBarIcon: () => (
-          <Image 
-            source = {require('../assets/img/Filtrar.png')}
-            style={{width: 25, height: 25, tintColor: 'white'}}
-          />
+            <Image
+                source={require('../assets/img/Filtrar.png')}
+                style={{ width: 25, height: 25, tintColor: 'white' }}
+            />
         )
-      }
+    }
 
-    constructor () {
-        super ();
+    constructor() {
+        super();
         this.state = {
             Lancamentos: [],
-            categoriaEscolhida: null,
+            categoriaEscolhida: [],
             Categorias: [],
         }
     }
 
     componentDidMount() {
-        this._carregarLancamento();
         this._carregarCategorias();
     }
 
     _carregarCategorias = async () => {
         await fetch('http://192.168.3.14:5000/api/categorias', {
-          headers: {
-            "Accept": "application/json",
-            "Authorization":"Bearer " + await AsyncStorage.getItem("@opflix:token")
-        }
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + await AsyncStorage.getItem("@opflix:token")
+            }
         })
-          .then(resposta => resposta.json())
-          .then(data => this.setState({Categorias: data}))
-          .catch(erro => console.warn(erro));
-      };
-    
+            .then(resposta => resposta.json())
+            .then(data => this.setState({ Categorias: data }))
+            .catch(erro => console.warn(erro));
+    };
+
     _carregarLancamento = async () => {
-    await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorCategoria/' + this.state.categoriaEscolhida, {
-        headers:{
-            "Accept": "application/json",
-            "Authorization": "Bearer " + await AsyncStorage.getItem("@opflix:token")
-        },
-    })
-        .then(resposta => resposta.json())
-        .then(data => this.setState({Lancamentos: data}))
-        .catch(erro => console.warn(erro));
+        await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorCategoria/' + this.state.categoriaEscolhida, {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + await AsyncStorage.getItem("@opflix:token")
+            },
+        })
+            .then(resposta => resposta.json())
+            .then(data => this.setState({ Lancamentos: data }))
+            .catch(erro => console.warn(erro));
+    };
+
+    getParsedDate(date){
+        date = String(date).split('T');
+        var days = String(date[0]).split('-');
+        return [parseInt(days[2]),"/", parseInt(days[1]),"/", parseInt(days[0])];
+    }
+
+    _listaVazia = () => {
+        return (
+            <View>
+                <Text style={{ textAlign: 'center', color: "white" }}>Nenhum lançamento encontrada nessa categoria.</Text>
+            </View>
+        );
     };
 
     _Logout = async (event) => {
@@ -56,7 +69,7 @@ class FiltroCategoria extends Component {
         this.props.navigation.navigate('AuthStack')
     }
 
-    render () {
+    render() {
         return (
             <ScrollView style={styles.ScrollView}>
                 <View style={styles.Page}>
@@ -64,30 +77,34 @@ class FiltroCategoria extends Component {
                         <Image source={require('../assets/img/Logo.png')} style={styles.Imagem} />
                         <TouchableOpacity><Text style={styles.Sair} onPress={this._Logout}>Sair</Text></TouchableOpacity>
                     </View>
-                    <Text style={styles.h1}>Filtrar por lançamentos por categorias</Text>
-                    <Picker style={styles.Picker} selectedValue={this.state.categoriaEscolhida} onValueChange={(itemValue) => this.setState({categoriaEscolhida: itemValue})}>
-                        <Picker.item label="Categoria" value="0" selectedValue/>
-                            {this.state.Categorias.map(e => {
-                                return( <Picker.item label={e.categoria1} value={e.idCategoria}/>
-                                    )})}
+                    <Text style={styles.h1}>Filtre os lançamentos por categorias</Text>
+                    <Picker style={styles.Picker} selectedValue={this.state.categoriaEscolhida} onValueChange={(itemValue) => this.setState({ categoriaEscolhida: itemValue })}>
+                        <Picker.item label="Categoria" value="0" selectedValue />
+                        {this.state.Categorias.map(e => {
+                            return (<Picker.item label={e.categoria1} value={e.idCategoria} />
+                            )
+                        })}
                     </Picker>
                     <TouchableOpacity style={styles.botao} onPress={this._carregarLancamento}>
                         <Text style={styles.texto}>Filtrar</Text>
                     </TouchableOpacity>
-                    <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} renderItem={({item}) => (
-                        <View style={styles.div}>
-                            <Text>Título: {item.nomeMidia}</Text>
-                            <Text>Tipo da mídia: {item.idTipoMidiaNavigation.tipoMidia1}</Text>
-                            <Text>Sinopse: {item.sinopse}</Text>
-                            <Text>Tempo da duração: {item.tempoDuracao}</Text>
-                            <Text>Categoria: {item.idCategoriaNavigation.categoria1}</Text>
-                            <Text>Diretor: {item.idDiretorNavigation.diretor1}</Text>
-                            <Text>Data do lançamento: {item.dataLancamento}</Text>
-                            <Text>Plataforma: {item.idPlataformaNavigation.plataforma1}</Text>
-                            <Text>Decrição: {item.descricao}</Text>
-                        </View>
-                    )}
-                    />
+                    <FlatList style={styles.FlatList}
+                        data={this.state.Lancamentos}
+                        ListEmptyComponent={this._listaVazia}
+                        keyExtractor={item => item.idLancamento}
+                        renderItem={({ item }) => (
+                            <View style={styles.div}>
+                                <Text style={styles.text}>Título: {item.nomeMidia}</Text>
+                                <Text style={styles.text}>Tipo da mídia: {item.idTipoMidiaNavigation.tipoMidia1}</Text>
+                                <Text style={styles.text}>Sinopse: {item.sinopse}</Text>
+                                <Text style={styles.text}>Tempo da duração: {item.tempoDuracao}</Text>
+                                <Text style={styles.text}>Categoria: {item.idCategoriaNavigation.categoria1}</Text>
+                                <Text style={styles.text}>Diretor: {item.idDiretorNavigation.diretor1}</Text>
+                                <Text style={styles.text}>Data do lançamento: {this.getParsedDate(item.dataLancamento)}</Text>
+                                <Text style={styles.text}>Plataforma: {item.idPlataformaNavigation.plataforma1}</Text>
+                                <Text style={styles.text}>Decrição: {item.descricao}</Text>
+                            </View>
+                        )} />
                 </View>
             </ScrollView>
         )
@@ -98,6 +115,9 @@ const styles = StyleSheet.create({
     ScrollView: {
         height: "100%",
         backgroundColor: "#2C2C2C",
+    },
+    text: {
+        color: "white"
     },
     Page: {
         backgroundColor: "#2C2C2C",

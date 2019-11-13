@@ -20,10 +20,6 @@ class FiltroData extends Component {
             MesEscolhido: null,
         }
     }
-
-    componentDidMount() {
-        this._carregarLancamento();
-    }
     
     _carregarLancamento = async () => {
     await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorDataLancamento/' + this.state.MesEscolhido, {
@@ -35,6 +31,20 @@ class FiltroData extends Component {
         .then(resposta => resposta.json())
         .then(data => this.setState({Lancamentos: data}))
         .catch(erro => console.warn(erro));
+    };
+
+    getParsedDate(date){
+        date = String(date).split('T');
+        var days = String(date[0]).split('-');
+        return [parseInt(days[2]),"/", parseInt(days[1]),"/", parseInt(days[0])];
+    }
+
+    _listaVazia = () => {
+        return (
+            <View>
+                <Text style={{ textAlign: 'center', color: "white" }}>Nenhum lançamento encontrado nesse mês.</Text>
+            </View>
+        );
     };
 
     _Logout = async (event) => {
@@ -69,17 +79,17 @@ class FiltroData extends Component {
                     <TouchableOpacity style={styles.botao} onPress={this._carregarLancamento}>
                         <Text style={styles.texto}>Filtrar</Text>
                     </TouchableOpacity>
-                    <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} renderItem={({item}) => (
+                    <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} ListEmptyComponent={this._listaVazia} renderItem={({item}) => (
                         <View style={styles.div}>
-                            <Text>Título: {item.nomeMidia}</Text>
-                            <Text>Tipo da mídia: {item.idTipoMidiaNavigation.tipoMidia1}</Text>
-                            <Text>Sinopse: {item.sinopse}</Text>
-                            <Text>Tempo da duração: {item.tempoDuracao}</Text>
-                            <Text>Categoria: {item.idCategoriaNavigation.categoria1}</Text>
-                            <Text>Diretor: {item.idDiretorNavigation.diretor1}</Text>
-                            <Text>Data do lançamento: {item.dataLancamento}</Text>
-                            <Text>Plataforma: {item.idPlataformaNavigation.plataforma1}</Text>
-                            <Text>Decrição: {item.descricao}</Text>
+                            <Text style={styles.text}>Título: {item.nomeMidia}</Text>
+                            <Text style={styles.text}>Tipo da mídia: {item.idTipoMidiaNavigation.tipoMidia1}</Text>
+                            <Text style={styles.text}>Sinopse: {item.sinopse}</Text>
+                            <Text style={styles.text}>Tempo da duração: {item.tempoDuracao}</Text>
+                            <Text style={styles.text}>Categoria: {item.idCategoriaNavigation.categoria1}</Text>
+                            <Text style={styles.text}>Diretor: {item.idDiretorNavigation.diretor1}</Text>
+                            <Text style={styles.text}>Data do lançamento: {this.getParsedDate(item.dataLancamento)}</Text>
+                            <Text style={styles.text}>Plataforma: {item.idPlataformaNavigation.plataforma1}</Text>
+                            <Text style={styles.text}>Decrição: {item.descricao}</Text>
                         </View>
                     )}
                     />
@@ -93,6 +103,9 @@ const styles = StyleSheet.create({
     ScrollView: {
         height: "100%",
         backgroundColor: "#2C2C2C",
+    },
+    text: {
+        color: "white"
     },
     Page: {
         backgroundColor: "#2C2C2C",
