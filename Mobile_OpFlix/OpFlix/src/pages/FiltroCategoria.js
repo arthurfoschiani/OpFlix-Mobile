@@ -38,8 +38,8 @@ class FiltroCategoria extends Component {
             .catch(erro => console.warn(erro));
     };
 
-    _carregarLancamento = async () => {
-        await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorCategoria/' + this.state.categoriaEscolhida, {
+    _carregarLancamento = async (itemValue) => {
+        await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorCategoria/' + itemValue, {
             headers: {
                 "Accept": "application/json",
                 "Authorization": "Bearer " + await AsyncStorage.getItem("@opflix:token")
@@ -56,12 +56,20 @@ class FiltroCategoria extends Component {
         return [parseInt(days[2]),"/", parseInt(days[1]),"/", parseInt(days[0])];
     }
 
-    _listaVazia = () => {
-        return (
-            <View>
-                <Text style={{ textAlign: 'center', color: "white" }}>Nenhum lançamento encontrada nessa categoria.</Text>
-            </View>
-        );
+    _listaVazia = () => { 
+        if( this.state.categoriaEscolhida != "") {
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', color: "white" }}>Nenhum lançamento encontrado nessa categoria.</Text>
+                </View>
+            );
+        } else {
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', color: "white" }}>Escolha uma categoria</Text>
+                </View>
+            );
+        }
     };
 
     _Logout = async (event) => {
@@ -78,16 +86,17 @@ class FiltroCategoria extends Component {
                         <TouchableOpacity><Text style={styles.Sair} onPress={this._Logout}>Sair</Text></TouchableOpacity>
                     </View>
                     <Text style={styles.h1}>Filtre os lançamentos por categorias</Text>
-                    <Picker style={styles.Picker} selectedValue={this.state.categoriaEscolhida} onValueChange={(itemValue) => this.setState({ categoriaEscolhida: itemValue })}>
-                        <Picker.item label="Categoria" value="0" selectedValue />
+                    <Picker style={styles.Picker}
+                        selectedValue={this.state.categoriaEscolhida} 
+                        onValueChange={(itemValue, itemIndex) => { 
+                            this.setState({ categoriaEscolhida: itemValue })
+                            this._carregarLancamento(itemValue)}}>
+                        <Picker.item label="Categoria" value="" selectedValue />
                         {this.state.Categorias.map(e => {
                             return (<Picker.item label={e.categoria1} value={e.idCategoria} />
                             )
                         })}
                     </Picker>
-                    <TouchableOpacity style={styles.botao} onPress={this._carregarLancamento}>
-                        <Text style={styles.texto}>Filtrar</Text>
-                    </TouchableOpacity>
                     <FlatList style={styles.FlatList}
                         data={this.state.Lancamentos}
                         ListEmptyComponent={this._listaVazia}

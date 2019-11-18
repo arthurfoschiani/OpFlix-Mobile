@@ -17,12 +17,12 @@ class FiltroData extends Component {
         super ();
         this.state = {
             Lancamentos: [],
-            MesEscolhido: null,
+            MesEscolhido: "",
         }
     }
     
-    _carregarLancamento = async () => {
-    await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorDataLancamento/' + this.state.MesEscolhido, {
+    _carregarLancamento = async (itemValue) => {
+    await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorDataLancamento/' + itemValue, {
         headers:{
             "Accept": "application/json",
             "Authorization": "Bearer " + await AsyncStorage.getItem("@opflix:token")
@@ -39,12 +39,20 @@ class FiltroData extends Component {
         return [parseInt(days[2]),"/", parseInt(days[1]),"/", parseInt(days[0])];
     }
 
-    _listaVazia = () => {
-        return (
-            <View>
-                <Text style={{ textAlign: 'center', color: "white" }}>Nenhum lançamento encontrado nesse mês.</Text>
-            </View>
-        );
+    _listaVazia = () => { 
+        if( this.state.MesEscolhido != "") {
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', color: "white" }}>Nenhum lançamento encontrado nesse mês.</Text>
+                </View>
+            );
+        } else {
+            return (
+                <View>
+                    <Text style={{ textAlign: 'center', color: "white" }}>Escolha um mês</Text>
+                </View>
+            );
+        }
     };
 
     _Logout = async (event) => {
@@ -61,8 +69,13 @@ class FiltroData extends Component {
                         <TouchableOpacity><Text style={styles.Sair} onPress={this._Logout}>Sair</Text></TouchableOpacity>
                     </View>
                     <Text style={styles.h1}>Busque os lançamentos de cada mês</Text>
-                    <Picker style={styles.Picker} selectedValue={this.state.MesEscolhido} onValueChange={(itemValue) => this.setState({MesEscolhido: itemValue})}>
-                        <Picker.item label="Escolha o mês desejado" value="0" selectedValue/>
+                    <Picker 
+                    style={styles.Picker} 
+                    selectedValue={this.state.MesEscolhido} 
+                    onValueChange={(itemValue, itemIndex) => { 
+                        this.setState({ MesEscolhido: itemValue })
+                        this._carregarLancamento(itemValue)}}>
+                        <Picker.item label="Escolha o mês desejado" value="" selectedValue/>
                         <Picker.item label="Janeiro" value="1"/>
                         <Picker.item label="Fevereiro" value="2"/>
                         <Picker.item label="Março" value="3"/>
@@ -76,9 +89,6 @@ class FiltroData extends Component {
                         <Picker.item label="Novembro" value="11"/>
                         <Picker.item label="Dezembro" value="12"/>
                     </Picker>
-                    <TouchableOpacity style={styles.botao} onPress={this._carregarLancamento}>
-                        <Text style={styles.texto}>Filtrar</Text>
-                    </TouchableOpacity>
                     <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} ListEmptyComponent={this._listaVazia} renderItem={({item}) => (
                         <View style={styles.div}>
                             <Text style={styles.text}>Título: {item.nomeMidia}</Text>
