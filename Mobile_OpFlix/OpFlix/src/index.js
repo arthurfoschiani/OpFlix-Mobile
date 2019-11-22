@@ -15,16 +15,16 @@ const AuthStack = createStackNavigator ({
 
 const MainNavigator = createBottomTabNavigator(
     {
-    Lancamentos: {
-      screen: LancamentosScreen,
+      FiltrarData: {
+        screen: FiltroDataScreen,
+      },
+      Lancamentos: {
+        screen: LancamentosScreen,
+      },
+      FiltrarCategoria: {
+        screen: FiltroCategoriaScreen,
+      },
     },
-    FiltrarData: {
-      screen: FiltroDataScreen,
-    },
-    FiltrarCategoria: {
-      screen: FiltroCategoriaScreen,
-    },
-  },
   {
     initialRouteName: 'Lancamentos',
     tabBarOptions: {
