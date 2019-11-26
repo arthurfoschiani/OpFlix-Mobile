@@ -18,6 +18,7 @@ class Login extends Component {
 
     componentDidMount() {
         this._verificacao()
+        console.disableYellowBox = true;
     }
     
     _verificacao = async () => {

@@ -6,10 +6,17 @@ import FiltroDataScreen from './pages/FiltroData';
 import FiltroCategoriaScreen from './pages/FiltroCategoria';
 import LancamentosScreen from './pages/Lançamentos';
 import LoginInScreen from './pages/Login';
+import VerificacaoScreen from './pages/Verificacao';
 
 const AuthStack = createStackNavigator ({
   Sign: {
     screen: LoginInScreen
+  }
+});
+
+const VerificacaoStack = createStackNavigator ({
+  Verificacao: {
+    screen: VerificacaoScreen
   }
 });
 
@@ -43,8 +50,9 @@ const MainNavigator = createBottomTabNavigator(
 export default createAppContainer(createSwitchNavigator(
   {
     MainNavigator,
-    AuthStack    
+    AuthStack,
+    VerificacaoStack,
   }, {
-    initialRouteName: 'AuthStack',
+    initialRouteName: 'VerificacaoStack',
   }
 ));

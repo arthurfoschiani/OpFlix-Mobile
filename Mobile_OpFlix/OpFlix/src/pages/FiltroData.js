@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, StyleSheet, Image, View, AsyncStorage, Picker, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, Image, View, AsyncStorage, Picker, TouchableOpacity, ActivityIndicator } from 'react-native';
 import {FlatList, ScrollView } from 'react-native-gesture-handler';
 
 class FiltroData extends Component {
@@ -18,18 +18,25 @@ class FiltroData extends Component {
         this.state = {
             Lancamentos: [],
             MesEscolhido: "",
+            loading: true,
         }
+    }
+
+    componentDidMount () {
+        this._carregarLancamento("");
+        console.disableYellowBox = true;
     }
     
     _carregarLancamento = async (itemValue) => {
-    await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorDataLancamento/' + itemValue, {
-        headers:{
-            "Accept": "application/json",
-            "Authorization": "Bearer " + await AsyncStorage.getItem("@opflix:token")
-        },
-    })
+        this.setState({ loading: true })
+        await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorDataLancamento/' + itemValue, {
+            headers:{
+                "Accept": "application/json",
+                "Authorization": "Bearer " + await AsyncStorage.getItem("@opflix:token")
+            },
+        })
         .then(resposta => resposta.json())
-        .then(data => this.setState({Lancamentos: data}))
+        .then(data => this.setState({ loading: false, Lancamentos: data}))
         .catch(erro => console.warn(erro));
     };
 
@@ -89,6 +96,7 @@ class FiltroData extends Component {
                         <Picker.item label="Novembro" value="11"/>
                         <Picker.item label="Dezembro" value="12"/>
                     </Picker>
+                    {this.state.loading ?  <ActivityIndicator style={styles.container} size="large" color="#FE5300"/>  :
                     <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} ListEmptyComponent={this._listaVazia} renderItem={({item}) => (
                         <View style={styles.div}>
                             <Text style={styles.text}>Título: {item.nomeMidia}</Text>
@@ -103,6 +111,7 @@ class FiltroData extends Component {
                         </View>
                     )}
                     />
+                    }
                 </View>
             </ScrollView>
         )
@@ -110,6 +119,10 @@ class FiltroData extends Component {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        height: 350,
+        justifyContent: 'center'
+    },
     ScrollView: {
         height: "100%",
         backgroundColor: "#2C2C2C",
@@ -163,7 +176,7 @@ const styles = StyleSheet.create({
     },
     FlatList: {
         backgroundColor: "#2C2C2C",
-        marginTop: 20,
+        marginTop: 0,
         marginBottom: 10,
         width: "100%"
     },

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, Image, View, TouchableOpacity, AsyncStorage } from 'react-native';
+import { Text, StyleSheet, Image, View, TouchableOpacity, AsyncStorage, ActivityIndicator  } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 class Lancamentos extends Component {
@@ -20,15 +20,18 @@ class Lancamentos extends Component {
     constructor() {
         super();
         this.state = {
-            Lancamentos: []
+            Lancamentos: [],
+            loading: true
         }
     }
 
     componentDidMount() {
         this._carregarLancamento();
+        console.disableYellowBox = true;
     }
 
     _carregarLancamento = async () => {
+        this.setState({ loading: true })
         await fetch('http://192.168.3.14:5000/api/lancamentos', {
             headers: {
                 "Accept": "application/json",
@@ -36,7 +39,7 @@ class Lancamentos extends Component {
             },
         })
             .then(resposta => resposta.json())
-            .then(data => this.setState({ Lancamentos: data }))
+            .then(data => this.setState({ loading: false, Lancamentos: data }))
             .catch(erro => console.warn(erro));
     };
 
@@ -60,6 +63,7 @@ class Lancamentos extends Component {
                         <TouchableOpacity><Text style={styles.Sair} onPress={this._Logout}>Sair</Text></TouchableOpacity>
                     </View>
                     <Text style={styles.h1}>Lançamentos</Text>
+                    {this.state.loading ?  <ActivityIndicator style={styles.container} size="large" color="#FE5300"/>  :
                     <FlatList style={styles.FlatList} data={this.state.Lancamentos} keyExtractor={item => item.idLancamento} renderItem={({ item }) => (
                         <View style={styles.div}>
                             <Text style={styles.text}>Título: {item.nomeMidia}</Text>
@@ -73,6 +77,7 @@ class Lancamentos extends Component {
                             <Text style={styles.text}>Decrição: {item.descricao}</Text>
                         </View>
                     )} />
+                    }
                 </View>
             </ScrollView>
         )
@@ -80,6 +85,10 @@ class Lancamentos extends Component {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        height: 450,
+        justifyContent: 'center'
+    },
     ScrollView: {
         height: "100%",
         backgroundColor: "#2C2C2C",

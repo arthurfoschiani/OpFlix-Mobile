@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, Image, View, AsyncStorage, Picker, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, Image, View, AsyncStorage, Picker, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 class FiltroCategoria extends Component {
@@ -19,11 +19,14 @@ class FiltroCategoria extends Component {
             Lancamentos: [],
             categoriaEscolhida: [],
             Categorias: [],
+            loading: true
         }
     }
 
     componentDidMount() {
         this._carregarCategorias();
+        this._carregarLancamento("");
+        console.disableYellowBox = true;
     }
 
     _carregarCategorias = async () => {
@@ -39,6 +42,7 @@ class FiltroCategoria extends Component {
     };
 
     _carregarLancamento = async (itemValue) => {
+        this.setState({ loading: true })
         await fetch('http://192.168.3.14:5000/api/lancamentos/FiltrarPorCategoria/' + itemValue, {
             headers: {
                 "Accept": "application/json",
@@ -46,7 +50,7 @@ class FiltroCategoria extends Component {
             },
         })
             .then(resposta => resposta.json())
-            .then(data => this.setState({ Lancamentos: data }))
+            .then(data => this.setState({ loading: false, Lancamentos: data }))
             .catch(erro => console.warn(erro));
     };
 
@@ -97,6 +101,7 @@ class FiltroCategoria extends Component {
                             )
                         })}
                     </Picker>
+                    {this.state.loading ?  <ActivityIndicator style={styles.container} size="large" color="#FE5300"/>  :
                     <FlatList style={styles.FlatList}
                         data={this.state.Lancamentos}
                         ListEmptyComponent={this._listaVazia}
@@ -114,6 +119,7 @@ class FiltroCategoria extends Component {
                                 <Text style={styles.text}>Decrição: {item.descricao}</Text>
                             </View>
                         )} />
+                    }
                 </View>
             </ScrollView>
         )
@@ -121,6 +127,10 @@ class FiltroCategoria extends Component {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        height: 350,
+        justifyContent: 'center'
+    },
     ScrollView: {
         height: "100%",
         backgroundColor: "#2C2C2C",
@@ -174,7 +184,7 @@ const styles = StyleSheet.create({
     },
     FlatList: {
         backgroundColor: "#2C2C2C",
-        marginTop: 20,
+        marginTop: 0,
         marginBottom: 10,
         width: "100%"
     },
