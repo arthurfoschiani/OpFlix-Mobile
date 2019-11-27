@@ -95,7 +95,7 @@ class FiltroCategoria extends Component {
                         onValueChange={(itemValue, itemIndex) => { 
                             this.setState({ categoriaEscolhida: itemValue })
                             this._carregarLancamento(itemValue)}}>
-                        <Picker.item label="Categoria" value="" selectedValue />
+                        <Picker.item label="Todos os lançamentos" value="" selectedValue />
                         {this.state.Categorias.map(e => {
                             return (<Picker.item label={e.categoria1} value={e.idCategoria} />
                             )

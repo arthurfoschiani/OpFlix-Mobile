@@ -82,7 +82,7 @@ class FiltroData extends Component {
                     onValueChange={(itemValue, itemIndex) => { 
                         this.setState({ MesEscolhido: itemValue })
                         this._carregarLancamento(itemValue)}}>
-                        <Picker.item label="Escolha o mês desejado" value="" selectedValue/>
+                        <Picker.item label="Todos os lançamentos" value="" selectedValue/>
                         <Picker.item label="Janeiro" value="1"/>
                         <Picker.item label="Fevereiro" value="2"/>
                         <Picker.item label="Março" value="3"/>
